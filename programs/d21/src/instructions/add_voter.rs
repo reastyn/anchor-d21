@@ -35,6 +35,8 @@ impl<'info> AddVoter<'_> {
 
         voter.is_initialized = true;
         voter.voted_negatively_once = false;
+        voter.second_vote_address = None;
+        voter.first_vote_address = None;
 
         Ok(())
     }

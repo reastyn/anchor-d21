@@ -28,7 +28,7 @@ describe("d21", () => {
   describe("get subjects", () => {
     it("should return all subjects", async () => {
       const subjectAccounts = await program.account.subjectAccount.all();
-    //   console.log(subjectAccounts);
+      console.log(subjectAccounts);
     });
   });
 
