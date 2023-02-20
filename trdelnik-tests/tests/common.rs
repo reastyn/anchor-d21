@@ -67,3 +67,86 @@ impl InitialFixture {
         }
     }
 }
+
+pub struct SubjectFixture {
+    pub client: Client,
+    pub subject: (Pubkey, u8),
+}
+
+impl SubjectFixture {
+    pub fn new(subject: Keypair, program_id: &Pubkey) -> Self {
+        let client = Client::new(subject.clone());
+        let program_id = program_id;
+        let subject =
+            Pubkey::find_program_address(&[b"subject", subject.pubkey().as_ref()], &program_id);
+        Self { client, subject }
+    }
+
+    #[throws]
+    pub async fn deploy(&mut self) {
+        self.client
+            .airdrop(self.client.payer().pubkey(), 5_000_000_000)
+            .await?;
+    }
+}
+
+pub async fn add_subject(
+    common_fixture: &InitialFixture,
+    subject_fixture: &SubjectFixture,
+    name: &String,
+) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
+    d21_instruction::add_subject(
+        &subject_fixture.client,
+        common_fixture.basic_info.1,
+        name.clone(),
+        subject_fixture.subject.0,
+        subject_fixture.client.payer().pubkey(),
+        System::id(),
+        common_fixture.basic_info.0,
+        Some(subject_fixture.client.payer().clone()),
+    )
+    .await
+}
+
+pub async fn add_voter(
+    common_fixture: &InitialFixture,
+    voter_fixture: &VoterFixture,
+) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
+    d21_instruction::add_voter(
+        &common_fixture.owner,
+        common_fixture.basic_info.1,
+        voter_fixture.pubkey.pubkey(),
+        voter_fixture.account.0,
+        common_fixture.owner.payer().pubkey(),
+        System::id(),
+        common_fixture.basic_info.0,
+        Some(common_fixture.owner.payer().clone()),
+    )
+    .await
+}
+
+pub struct VoterFixture {
+    pub account: (Pubkey, u8),
+    pub pubkey: Keypair,
+    pub client: Client,
+}
+
+impl VoterFixture {
+    pub fn new(voter: Keypair, program_id: &Pubkey) -> Self {
+        VoterFixture {
+            account: Pubkey::find_program_address(
+                &[b"voter", voter.pubkey().as_ref()],
+                &program_id,
+            ),
+            pubkey: voter.clone(),
+            client: Client::new(voter),
+        }
+    }
+
+    #[throws]
+    pub async fn deploy(&mut self) {
+        self.client
+            .airdrop(self.client.payer().pubkey(), 5_000_000_000)
+            .await?;
+    }
+}

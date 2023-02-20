@@ -19,23 +19,6 @@ async fn init_fixture() -> Fixture {
     fixture
 }
 
-pub async fn add_voter(
-    common_fixture: &InitialFixture,
-    voter_fixture: &VoterFixture,
-) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
-    d21_instruction::add_voter(
-        &common_fixture.owner,
-        common_fixture.basic_info.1,
-        voter_fixture.pubkey.pubkey(),
-        voter_fixture.account.0,
-        common_fixture.owner.payer().pubkey(),
-        System::id(),
-        common_fixture.basic_info.0,
-        Some(common_fixture.owner.payer().clone()),
-    )
-    .await
-}
-
 #[trdelnik_test]
 async fn test_add_voter(#[future] init_fixture: Result<Fixture>) {
     let fixture = init_fixture.await?;
@@ -62,23 +45,6 @@ async fn test_add_voter_twice(#[future] init_fixture: Result<Fixture>) {
     add_voter(&fixture.common, &fixture.voter).await?;
     let result = add_voter(&fixture.common, &fixture.voter).await;
     assert!(!result.is_ok());
-}
-
-pub struct VoterFixture {
-    account: (Pubkey, u8),
-    pubkey: Keypair,
-}
-
-impl VoterFixture {
-    fn new(voter: Keypair, program_id: &Pubkey) -> Self {
-        VoterFixture {
-            account: Pubkey::find_program_address(
-                &[b"voter", voter.pubkey().as_ref()],
-                &program_id,
-            ),
-            pubkey: voter,
-        }
-    }
 }
 
 struct Fixture {

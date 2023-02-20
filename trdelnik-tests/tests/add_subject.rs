@@ -23,24 +23,6 @@ async fn init_fixture() -> Fixture {
     fixture
 }
 
-pub async fn add_subject(
-    common_fixture: &InitialFixture,
-    subject_fixture: &SubjectFixture,
-    name: &String,
-) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
-    d21_instruction::add_subject(
-        &subject_fixture.client,
-        common_fixture.basic_info.1,
-        name.clone(),
-        subject_fixture.subject.0,
-        subject_fixture.client.payer().pubkey(),
-        System::id(),
-        common_fixture.basic_info.0,
-        Some(subject_fixture.client.payer().clone()),
-    )
-    .await
-}
-
 #[trdelnik_test]
 async fn test_add_subject(#[future] init_fixture: Result<Fixture>) {
     let fixture = init_fixture.await?;
@@ -80,28 +62,6 @@ async fn test_add_subject_longer_name(#[future] init_fixture: Result<Fixture>) {
     let err = result.err().unwrap();
 
     check_custom_err(&err, D21ErrorCode::NameTooLong);
-}
-
-pub struct SubjectFixture {
-    client: Client,
-    subject: (Pubkey, u8),
-}
-
-impl SubjectFixture {
-    pub fn new(subject: Keypair, program_id: &Pubkey) -> Self {
-        let client = Client::new(subject.clone());
-        let program_id = program_id;
-        let subject =
-            Pubkey::find_program_address(&[b"subject", subject.pubkey().as_ref()], &program_id);
-        Self { client, subject }
-    }
-
-    #[throws]
-    pub async fn deploy(&mut self) {
-        self.client
-            .airdrop(self.client.payer().pubkey(), 5_000_000_000)
-            .await?;
-    }
 }
 
 struct Fixture {

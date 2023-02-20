@@ -26,7 +26,7 @@ pub mod d21 {
 
     pub fn vote(
         ctx: Context<Vote>,
-        _account_bump: u8,
+        _voter_bump: u8,
         _subject_bump: u8,
         _basic_info_bump: u8,
         subject: Pubkey,

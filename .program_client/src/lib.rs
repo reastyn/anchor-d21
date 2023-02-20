@@ -146,7 +146,7 @@ pub mod d21_instruction {
     }
     pub async fn vote(
         client: &Client,
-        i__account_bump: u8,
+        i__voter_bump: u8,
         i__subject_bump: u8,
         i__basic_info_bump: u8,
         i_subject: Pubkey,
@@ -162,7 +162,7 @@ pub mod d21_instruction {
             .send_instruction(
                 PROGRAM_ID,
                 d21::instruction::Vote {
-                    _account_bump: i__account_bump,
+                    _voter_bump: i__voter_bump,
                     _subject_bump: i__subject_bump,
                     _basic_info_bump: i__basic_info_bump,
                     subject: i_subject,
@@ -180,7 +180,7 @@ pub mod d21_instruction {
             .await?)
     }
     pub fn vote_ix(
-        i__account_bump: u8,
+        i__voter_bump: u8,
         i__subject_bump: u8,
         i__basic_info_bump: u8,
         i_subject: Pubkey,
@@ -194,7 +194,7 @@ pub mod d21_instruction {
         Instruction {
             program_id: PROGRAM_ID,
             data: d21::instruction::Vote {
-                _account_bump: i__account_bump,
+                _voter_bump: i__voter_bump,
                 _subject_bump: i__subject_bump,
                 _basic_info_bump: i__basic_info_bump,
                 subject: i_subject,
