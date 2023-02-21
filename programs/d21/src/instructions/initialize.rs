@@ -1,16 +1,9 @@
-use anchor_lang::{prelude::*, solana_program::program_pack::IsInitialized};
+use anchor_lang::{prelude::*};
 
 #[account]
 pub struct BasicInfo {
     pub owner: Pubkey,
     pub end_date: i64,
-    pub is_initialized: bool,
-}
-
-impl IsInitialized for BasicInfo {
-    fn is_initialized(&self) -> bool {
-        self.is_initialized
-    }
 }
 
 #[derive(Accounts)]
@@ -31,7 +24,6 @@ impl<'info> Initialize<'_> {
 
         basic_info.end_date = end_date;
         basic_info.owner = self.initializer.key();
-        basic_info.is_initialized = true;
 
         Ok(())
     }

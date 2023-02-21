@@ -39,6 +39,5 @@ export const testAddSubject = (
     const account = await program.account.subjectAccount.fetch(subjectPDA);
     expect(account.name).to.be.eq("Test subject :)");
     expect(account.votes.toNumber()).to.be.eq(0);
-    expect(account.isInitialized).to.be.true;
   });
 };

@@ -43,7 +43,7 @@ export const testAddVoter = (
   it("owner should add voter", async () => {
     const [voterPDA] = await createVoter(program, owner, newVoter);
     const account = await program.account.voterAccount.fetch(voterPDA);
-    expect(account.isInitialized).to.be.true;
+    expect(account.votedNegativelyOnce).to.be.false;
   });
 
   it("should not be able to add voter multiple times", async () => {

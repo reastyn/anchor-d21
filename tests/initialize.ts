@@ -8,7 +8,6 @@ export const testInitialize = (program: Program<D21>, owner: anchor.web3.Keypair
   it("should initialize", async () => {
     const [basicInfoPDA] = await initialize(program, owner);
     const account = await program.account.basicInfo.fetch(basicInfoPDA);
-    expect(account.isInitialized).to.be.true;
     expect(account.owner.toBase58()).to.be.eq(owner.publicKey.toBase58());
     expect(account.endDate).to.be.ok;
   });

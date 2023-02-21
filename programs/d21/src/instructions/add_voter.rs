@@ -4,16 +4,9 @@ use crate::*;
 
 #[account]
 pub struct VoterAccount {
-    pub is_initialized: bool,
     pub voted_negatively_once: bool,
     pub second_vote_address: Option<Pubkey>,
     pub first_vote_address: Option<Pubkey>,
-}
-
-impl IsInitialized for VoterAccount {
-    fn is_initialized(&self) -> bool {
-        self.is_initialized
-    }
 }
 
 #[derive(Accounts)]
@@ -33,7 +26,6 @@ impl<'info> AddVoter<'_> {
     pub fn process(&mut self) -> Result<()> {
         let voter = &mut self.voter;
 
-        voter.is_initialized = true;
         voter.voted_negatively_once = false;
         voter.second_vote_address = None;
         voter.first_vote_address = None;

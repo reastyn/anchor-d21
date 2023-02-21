@@ -1,18 +1,9 @@
-use anchor_lang::solana_program::program_pack::IsInitialized;
-
 use crate::*;
 
 #[account]
 pub struct SubjectAccount {
-    pub is_initialized: bool,
     pub votes: i64,
     pub name: String,
-}
-
-impl IsInitialized for SubjectAccount {
-    fn is_initialized(&self) -> bool {
-        self.is_initialized
-    }
 }
 
 #[derive(Accounts)]
@@ -33,7 +24,6 @@ impl<'info> AddSubject<'_> {
         let subject = &mut self.subject;
 
         subject.votes = 0;
-        subject.is_initialized = true;
         subject.name = name;
 
         Ok(())

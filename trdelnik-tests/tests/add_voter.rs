@@ -36,7 +36,6 @@ async fn test_add_voter(#[future] init_fixture: Result<Fixture>) {
     assert_eq!(voter.voted_negatively_once, false);
     assert_eq!(voter.second_vote_address, None);
     assert_eq!(voter.first_vote_address, None);
-    assert_eq!(voter.is_initialized, true);
 }
 
 #[trdelnik_test]

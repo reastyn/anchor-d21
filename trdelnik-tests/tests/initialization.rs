@@ -37,7 +37,6 @@ async fn test_initialization(#[future] init_fixture: Result<Fixture>) {
     let basic_info = BasicInfo::try_deserialize(&mut basic_info.unwrap().data()).unwrap();
 
     assert_eq!(basic_info.owner, fixture.client.payer().pubkey());
-    assert_eq!(basic_info.is_initialized, true);
     assert!(basic_info.end_date > 0);
     let now_unix = SystemTime::now()
         .duration_since(UNIX_EPOCH)

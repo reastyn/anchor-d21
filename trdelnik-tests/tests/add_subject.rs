@@ -41,7 +41,6 @@ async fn test_add_subject(#[future] init_fixture: Result<Fixture>) {
 
     assert_eq!(subject.name, name);
     assert_eq!(subject.votes, 0);
-    assert_eq!(subject.is_initialized, true);
 }
 
 #[trdelnik_test]
