@@ -31,7 +31,7 @@ impl<'info> AddSubject<'_> {
 
     pub fn constraints(&self, name: &String) -> Result<()> {
         if name.len() > 64 {
-            return Err(error!(D21ErrorCode::NameTooLong));
+            return Err(D21ErrorCode::NameTooLong.into());
         }
         let basic_info = &self.basic_info;
         only_in_voting_period(basic_info)?;

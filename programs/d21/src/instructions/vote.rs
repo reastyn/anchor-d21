@@ -34,12 +34,12 @@ impl<'info> Vote<'_> {
             }
             (Some(first_vote_address), None) => {
                 if first_vote_address == subject {
-                    return Err(error!(D21ErrorCode::VoteForSameSubjectTwice));
+                    return Err(D21ErrorCode::VoteForSameSubjectTwice.into());
                 }
                 voter.second_vote_address = Some(subject);
             }
             _ => {
-                return Err(error!(D21ErrorCode::NoMorePositiveVotes));
+                return Err(D21ErrorCode::NoMorePositiveVotes.into());
             }
         }
 
@@ -53,15 +53,15 @@ impl<'info> Vote<'_> {
     pub fn vote_negatively(&mut self, subject: Pubkey) -> Result<()> {
         let voter = &mut self.voter;
         if voter.voted_negatively_once {
-            return Err(error!(D21ErrorCode::NoMoreNegativeVotes));
+            return Err(D21ErrorCode::NoMoreNegativeVotes.into());
         }
         if voter.first_vote_address.is_none() || voter.second_vote_address.is_none() {
-            return Err(error!(D21ErrorCode::NegativeVotesAfterTwoPositive));
+            return Err(D21ErrorCode::NegativeVotesAfterTwoPositive.into());
         }
         if voter.first_vote_address.unwrap() == subject.key()
             || voter.second_vote_address.unwrap() == subject.key()
         {
-            return Err(error!(D21ErrorCode::VoteForSameSubjectTwice));
+            return Err(D21ErrorCode::VoteForSameSubjectTwice.into());
         }
 
         voter.voted_negatively_once = true;

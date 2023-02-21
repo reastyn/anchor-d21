@@ -20,14 +20,14 @@ pub enum D21ErrorCode {
 
 pub fn only_in_voting_period(basic_info: &Account<BasicInfo>) -> Result<()> {
     if basic_info.end_date < Clock::get()?.unix_timestamp {
-        return Err(error!(D21ErrorCode::ElectionEnded));
+        return Err(D21ErrorCode::ElectionEnded.into());
     }
     Ok(())
 }
 
 pub fn only_owner(basic_info: &Account<BasicInfo>, initializer: &Signer) -> Result<()> {
     if basic_info.owner != *initializer.key {
-        return Err(error!(D21ErrorCode::NotOwner));
+        return Err(D21ErrorCode::NotOwner.into());
     }
     Ok(())
 }
