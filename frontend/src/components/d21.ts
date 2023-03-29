@@ -49,10 +49,6 @@ export type D21 = {
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "name",
           "type": "string"
         }
@@ -83,10 +79,6 @@ export type D21 = {
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
         {
           "name": "voter",
           "type": "publicKey"
@@ -124,18 +116,6 @@ export type D21 = {
       ],
       "args": [
         {
-          "name": "voterBump",
-          "type": "u8"
-        },
-        {
-          "name": "subjectBump",
-          "type": "u8"
-        },
-        {
-          "name": "basicInfoBump",
-          "type": "u8"
-        },
-        {
           "name": "subject",
           "type": "publicKey"
         },
@@ -159,6 +139,14 @@ export type D21 = {
           {
             "name": "name",
             "type": "string"
+          },
+          {
+            "name": "pubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -183,6 +171,10 @@ export type D21 = {
             "type": {
               "option": "publicKey"
             }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -199,6 +191,10 @@ export type D21 = {
           {
             "name": "endDate",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -239,6 +235,11 @@ export type D21 = {
       "code": 6006,
       "name": "NegativeVotesAfterTwoPositive",
       "msg": "You can only vote negatively after voting positively twice."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidBump",
+      "msg": "Could not find bump value."
     }
   ]
 };
@@ -294,10 +295,6 @@ export const IDL: D21 = {
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "name",
           "type": "string"
         }
@@ -328,10 +325,6 @@ export const IDL: D21 = {
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
         {
           "name": "voter",
           "type": "publicKey"
@@ -369,18 +362,6 @@ export const IDL: D21 = {
       ],
       "args": [
         {
-          "name": "voterBump",
-          "type": "u8"
-        },
-        {
-          "name": "subjectBump",
-          "type": "u8"
-        },
-        {
-          "name": "basicInfoBump",
-          "type": "u8"
-        },
-        {
           "name": "subject",
           "type": "publicKey"
         },
@@ -404,6 +385,14 @@ export const IDL: D21 = {
           {
             "name": "name",
             "type": "string"
+          },
+          {
+            "name": "pubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -428,6 +417,10 @@ export const IDL: D21 = {
             "type": {
               "option": "publicKey"
             }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -444,6 +437,10 @@ export const IDL: D21 = {
           {
             "name": "endDate",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -484,6 +481,11 @@ export const IDL: D21 = {
       "code": 6006,
       "name": "NegativeVotesAfterTwoPositive",
       "msg": "You can only vote negatively after voting positively twice."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidBump",
+      "msg": "Could not find bump value."
     }
   ]
 };

@@ -49,10 +49,6 @@
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "name",
           "type": "string"
         }
@@ -83,10 +79,6 @@
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
         {
           "name": "voter",
           "type": "publicKey"
@@ -124,18 +116,6 @@
       ],
       "args": [
         {
-          "name": "voterBump",
-          "type": "u8"
-        },
-        {
-          "name": "subjectBump",
-          "type": "u8"
-        },
-        {
-          "name": "basicInfoBump",
-          "type": "u8"
-        },
-        {
           "name": "subject",
           "type": "publicKey"
         },
@@ -159,6 +139,14 @@
           {
             "name": "name",
             "type": "string"
+          },
+          {
+            "name": "pubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -183,6 +171,10 @@
             "type": {
               "option": "publicKey"
             }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -199,6 +191,10 @@
           {
             "name": "endDate",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -239,9 +235,14 @@
       "code": 6006,
       "name": "NegativeVotesAfterTwoPositive",
       "msg": "You can only vote negatively after voting positively twice."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidBump",
+      "msg": "Could not find bump value."
     }
   ],
   "metadata": {
-    "address": "GutqpKKVVovBTRdcPaLxyq1ZFji5hYA6cma1YZ5sQfah"
+    "address": "56oTcmNAS1eY5J1bxCW53amYc8kKMG2vY7aXTTPdsXpa"
   }
 }

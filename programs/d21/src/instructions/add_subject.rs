@@ -4,13 +4,14 @@ use crate::*;
 pub struct SubjectAccount {
     pub votes: i64,
     pub name: String,
+    pub pubkey: Pubkey,
     pub bump: u8,
 }
 
 #[derive(Accounts)]
 #[instruction(name: String)]
 pub struct AddSubject<'info> {
-    #[account(init, payer = initializer, space = 8 + 8 + (4 + 64) + 1, seeds = [b"subject", initializer.key().as_ref()], bump)]
+    #[account(init, payer = initializer, space = 8 + 8 + (4 + 64) + 32 + 1, seeds = [b"subject", initializer.key().as_ref()], bump)]
     pub subject: Account<'info, SubjectAccount>,
     #[account(mut)]
     pub initializer: Signer<'info>,
@@ -26,6 +27,7 @@ impl<'info> AddSubject<'_> {
 
         subject.votes = 0;
         subject.name = name;
+        subject.pubkey = self.initializer.key();
         subject.bump = bump;
 
         Ok(())
