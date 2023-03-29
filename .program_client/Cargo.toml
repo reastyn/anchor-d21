@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2018"
 
 [dependencies]
-trdelnik-client = "0.3.0"
+trdelnik-client = { git = "https://github.com/reastyn/trdelnik" }
 
 [dependencies.d21]
 path = "../programs/d21"
