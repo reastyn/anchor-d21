@@ -3,13 +3,13 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-d21 = "56oTcmNAS1eY5J1bxCW53amYc8kKMG2vY7aXTTPdsXpa"
+d21 = "9Ho753qhfMejDJv63d47NeyH2HvvZnrJEaiW7xp5yKuL"
 
 [registry]
 url = "https://api.apr.dev"
 
 [programs.devnet]
-d21 = "56oTcmNAS1eY5J1bxCW53amYc8kKMG2vY7aXTTPdsXpa"
+d21 = "9Ho753qhfMejDJv63d47NeyH2HvvZnrJEaiW7xp5yKuL"
 
 [provider]
 cluster = "Localnet"

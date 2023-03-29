@@ -175,7 +175,7 @@ const Main: React.FC = () => {
   };
 
   const vote = async (
-    selectedProgramId: PublicKey,
+    selectedProgramId: string,
     subject: PublicKey,
     isPositiveVote: boolean
   ) => {
@@ -224,13 +224,13 @@ const Main: React.FC = () => {
           className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
           onClick={() => initializeVoting()}
         >
-          Create my election
+          Create this program&apos;s program
         </button>
         <button
           className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
           onClick={() => getBasicInfo()}
         >
-          Open my election
+          Open program&apos;s election
         </button>
         <button
           className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
