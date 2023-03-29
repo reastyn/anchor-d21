@@ -44,9 +44,6 @@ async fn vote(
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::vote(
         &voter.client,
-        voter.account.1,
-        subject.subject.1,
-        common.basic_info.1,
         subject.client.payer().pubkey(),
         true,
         voter.account.0,

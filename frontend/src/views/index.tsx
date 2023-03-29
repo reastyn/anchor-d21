@@ -1,2 +1,2 @@
 export { HomeView } from "./home";
-export { BasicsView } from "./basics";
+export { D21View } from "./d21";

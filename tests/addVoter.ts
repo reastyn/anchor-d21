@@ -14,10 +14,10 @@ export const createVoter = async (
     [Buffer.from("voter"), newVoter.publicKey.toBuffer()],
     program.programId
   );
-  const [basicInfoPDA, bump] = getBasicInfoPDA(program);
+  const [basicInfoPDA, _bump] = getBasicInfoPDA(program);
 
   await program.methods
-    .addVoter(bump, newVoter.publicKey)
+    .addVoter(newVoter.publicKey)
     .accounts({
       voter: voterPDA,
       initializer: owner.publicKey,

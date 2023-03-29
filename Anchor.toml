@@ -1,11 +1,15 @@
 [features]
 seeds = false
 skip-lint = false
+
 [programs.localnet]
 d21 = "Poo5jhFcGjMjYaz2cpmSNVq4ehvjKJhjU7aCZiS2LMP"
 
 [registry]
 url = "https://api.apr.dev"
+
+[programs.devnet]
+d21 = "GutqpKKVVovBTRdcPaLxyq1ZFji5hYA6cma1YZ5sQfah"
 
 [provider]
 cluster = "Localnet"

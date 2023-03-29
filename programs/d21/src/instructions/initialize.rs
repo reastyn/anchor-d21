@@ -4,6 +4,7 @@ use anchor_lang::{prelude::*};
 pub struct BasicInfo {
     pub owner: Pubkey,
     pub end_date: i64,
+    pub bump: u8,
 }
 
 #[derive(Accounts)]
@@ -16,12 +17,13 @@ pub struct Initialize<'info> {
 }
 
 impl<'info> Initialize<'_> {
-    pub fn process(&mut self) -> Result<()> {
+    pub fn process(&mut self, bump: u8) -> Result<()> {
         let basic_info = &mut self.basic_info;
 
         let clock = Clock::get()?;
         let end_date = clock.unix_timestamp + 2628000;
 
+        basic_info.bump = bump;
         basic_info.end_date = end_date;
         basic_info.owner = self.initializer.key();
 

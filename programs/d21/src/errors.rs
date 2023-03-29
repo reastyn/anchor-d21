@@ -16,6 +16,8 @@ pub enum D21ErrorCode {
     NoMoreNegativeVotes,
     #[msg("You can only vote negatively after voting positively twice.")]
     NegativeVotesAfterTwoPositive,
+    #[msg("Could not find bump value.")]
+    InvalidBump
 }
 
 pub fn only_in_voting_period(basic_info: &Account<BasicInfo>) -> Result<()> {

@@ -3,9 +3,7 @@ mod common;
 use common::*;
 use d21::{D21ErrorCode, SubjectAccount};
 use fehler::throws;
-use program_client::d21_instruction;
 use trdelnik_client::{
-    anchor_client::solana_client::client_error::ClientErrorKind,
     anchor_lang::AccountDeserialize,
     anyhow::Result,
     solana_sdk::{account::ReadableAccount, transaction::TransactionError},

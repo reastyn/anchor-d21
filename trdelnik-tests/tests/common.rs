@@ -4,7 +4,7 @@ use program_client::d21_instruction;
 use trdelnik_client::{
     anchor_client::solana_client::{
         client_error::ClientErrorKind,
-        rpc_request::{self, RpcError, RpcResponseErrorData},
+        rpc_request::{self, RpcResponseErrorData},
     },
     anyhow::Result,
     solana_sdk::{instruction::InstructionError, transaction::TransactionError},
@@ -40,10 +40,11 @@ pub fn check_custom_err(err: &ClientError, custom_err: D21ErrorCode) {
 impl InitialFixture {
     #[throws]
     pub async fn deploy(&mut self) {
-        self.owner
-            .airdrop(self.owner.payer().pubkey(), 5_000_000_000)
-            .await?;
+        // self.owner
+        //     .airdrop(self.owner.payer().pubkey(), 5_000_000_000)
+        //     .await?;
         self.owner.deploy_by_name(&self.program, "d21").await?;
+        println!("Deployed program: {:?}", self.program.pubkey());
     }
 
     pub async fn init(&mut self) -> Result<()> {
@@ -97,7 +98,6 @@ pub async fn add_subject(
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::add_subject(
         &subject_fixture.client,
-        common_fixture.basic_info.1,
         name.clone(),
         subject_fixture.subject.0,
         subject_fixture.client.payer().pubkey(),
@@ -114,7 +114,6 @@ pub async fn add_voter(
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::add_voter(
         &common_fixture.owner,
-        common_fixture.basic_info.1,
         voter_fixture.pubkey.pubkey(),
         voter_fixture.account.0,
         common_fixture.owner.payer().pubkey(),

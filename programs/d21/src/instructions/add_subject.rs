@@ -4,27 +4,29 @@ use crate::*;
 pub struct SubjectAccount {
     pub votes: i64,
     pub name: String,
+    pub bump: u8,
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8, name: String)]
+#[instruction(name: String)]
 pub struct AddSubject<'info> {
-    #[account(init, payer = initializer, space = 8 + 1 + 8 + (4 + 64), seeds = [b"subject", initializer.key().as_ref()], bump)]
+    #[account(init, payer = initializer, space = 8 + 8 + (4 + 64) + 1, seeds = [b"subject", initializer.key().as_ref()], bump)]
     pub subject: Account<'info, SubjectAccount>,
     #[account(mut)]
     pub initializer: Signer<'info>,
     pub system_program: Program<'info, System>,
-    #[account(seeds = [b"basic_info"], bump=bump)]
+    #[account(seeds = [b"basic_info"], bump=basic_info.bump)]
     pub basic_info: Account<'info, BasicInfo>,
 }
 
 impl<'info> AddSubject<'_> {
     #[access_control(Self::constraints(&self, &name))]
-    pub fn process(&mut self, name: String) -> Result<()> {
+    pub fn process(&mut self, name: String, bump: u8) -> Result<()> {
         let subject = &mut self.subject;
 
         subject.votes = 0;
         subject.name = name;
+        subject.bump = bump;
 
         Ok(())
     }

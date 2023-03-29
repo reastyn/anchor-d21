@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Poo5jhFcGjMjYaz2cpmSNVq4ehvjKJhjU7aCZiS2LMP");
+declare_id!("GutqpKKVVovBTRdcPaLxyq1ZFji5hYA6cma1YZ5sQfah");
 
 mod errors;
 mod instructions;
@@ -13,22 +13,25 @@ pub mod d21 {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        ctx.accounts.process()
+        let bump = *ctx
+            .bumps
+            .get("basic_info")
+            .ok_or(D21ErrorCode::InvalidBump)?;
+        ctx.accounts.process(bump)
     }
 
-    pub fn add_subject(ctx: Context<AddSubject>, _bump: u8, name: String) -> Result<()> {
-        ctx.accounts.process(name)
+    pub fn add_subject(ctx: Context<AddSubject>, name: String) -> Result<()> {
+        let bump = *ctx.bumps.get("subject").ok_or(D21ErrorCode::InvalidBump)?;
+        ctx.accounts.process(name, bump)
     }
 
-    pub fn add_voter(ctx: Context<AddVoter>, _bump: u8, _voter: Pubkey) -> Result<()> {
-        ctx.accounts.process()
+    pub fn add_voter(ctx: Context<AddVoter>, _voter: Pubkey) -> Result<()> {
+        let bump = *ctx.bumps.get("voter").ok_or(D21ErrorCode::InvalidBump)?;
+        ctx.accounts.process(bump)
     }
 
     pub fn vote(
         ctx: Context<Vote>,
-        _voter_bump: u8,
-        _subject_bump: u8,
-        _basic_info_bump: u8,
         subject: Pubkey,
         is_positive_vote: bool,
     ) -> Result<()> {

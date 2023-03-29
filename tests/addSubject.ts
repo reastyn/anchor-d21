@@ -13,10 +13,10 @@ export const addSubject = async (
     [Buffer.from("subject"), newSubject.publicKey.toBuffer()],
     program.programId
   );
-  const [basicInfoPDA, bump] = getBasicInfoPDA(program);
+  const [basicInfoPDA, _bump] = getBasicInfoPDA(program);
 
   await program.methods
-    .addSubject(bump, "Test subject :)")
+    .addSubject("Test subject :)")
     .accounts({
       subject: subjectPDA,
       initializer: newSubject.publicKey,

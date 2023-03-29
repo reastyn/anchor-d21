@@ -44,7 +44,6 @@ pub mod d21_instruction {
     }
     pub async fn add_subject(
         client: &Client,
-        i__bump: u8,
         i_name: String,
         a_subject: anchor_lang::solana_program::pubkey::Pubkey,
         a_initializer: anchor_lang::solana_program::pubkey::Pubkey,
@@ -55,10 +54,7 @@ pub mod d21_instruction {
         Ok(client
             .send_instruction(
                 PROGRAM_ID,
-                d21::instruction::AddSubject {
-                    _bump: i__bump,
-                    name: i_name,
-                },
+                d21::instruction::AddSubject { name: i_name },
                 d21::accounts::AddSubject {
                     subject: a_subject,
                     initializer: a_initializer,
@@ -70,7 +66,6 @@ pub mod d21_instruction {
             .await?)
     }
     pub fn add_subject_ix(
-        i__bump: u8,
         i_name: String,
         a_subject: anchor_lang::solana_program::pubkey::Pubkey,
         a_initializer: anchor_lang::solana_program::pubkey::Pubkey,
@@ -79,11 +74,7 @@ pub mod d21_instruction {
     ) -> Instruction {
         Instruction {
             program_id: PROGRAM_ID,
-            data: d21::instruction::AddSubject {
-                _bump: i__bump,
-                name: i_name,
-            }
-            .data(),
+            data: d21::instruction::AddSubject { name: i_name }.data(),
             accounts: d21::accounts::AddSubject {
                 subject: a_subject,
                 initializer: a_initializer,
@@ -95,7 +86,6 @@ pub mod d21_instruction {
     }
     pub async fn add_voter(
         client: &Client,
-        i__bump: u8,
         i__voter: Pubkey,
         a_voter: anchor_lang::solana_program::pubkey::Pubkey,
         a_initializer: anchor_lang::solana_program::pubkey::Pubkey,
@@ -106,10 +96,7 @@ pub mod d21_instruction {
         Ok(client
             .send_instruction(
                 PROGRAM_ID,
-                d21::instruction::AddVoter {
-                    _bump: i__bump,
-                    _voter: i__voter,
-                },
+                d21::instruction::AddVoter { _voter: i__voter },
                 d21::accounts::AddVoter {
                     voter: a_voter,
                     initializer: a_initializer,
@@ -121,7 +108,6 @@ pub mod d21_instruction {
             .await?)
     }
     pub fn add_voter_ix(
-        i__bump: u8,
         i__voter: Pubkey,
         a_voter: anchor_lang::solana_program::pubkey::Pubkey,
         a_initializer: anchor_lang::solana_program::pubkey::Pubkey,
@@ -130,11 +116,7 @@ pub mod d21_instruction {
     ) -> Instruction {
         Instruction {
             program_id: PROGRAM_ID,
-            data: d21::instruction::AddVoter {
-                _bump: i__bump,
-                _voter: i__voter,
-            }
-            .data(),
+            data: d21::instruction::AddVoter { _voter: i__voter }.data(),
             accounts: d21::accounts::AddVoter {
                 voter: a_voter,
                 initializer: a_initializer,
@@ -146,9 +128,6 @@ pub mod d21_instruction {
     }
     pub async fn vote(
         client: &Client,
-        i__voter_bump: u8,
-        i__subject_bump: u8,
-        i__basic_info_bump: u8,
         i_subject: Pubkey,
         i_is_positive_vote: bool,
         a_voter: anchor_lang::solana_program::pubkey::Pubkey,
@@ -162,9 +141,6 @@ pub mod d21_instruction {
             .send_instruction(
                 PROGRAM_ID,
                 d21::instruction::Vote {
-                    _voter_bump: i__voter_bump,
-                    _subject_bump: i__subject_bump,
-                    _basic_info_bump: i__basic_info_bump,
                     subject: i_subject,
                     is_positive_vote: i_is_positive_vote,
                 },
@@ -180,9 +156,6 @@ pub mod d21_instruction {
             .await?)
     }
     pub fn vote_ix(
-        i__voter_bump: u8,
-        i__subject_bump: u8,
-        i__basic_info_bump: u8,
         i_subject: Pubkey,
         i_is_positive_vote: bool,
         a_voter: anchor_lang::solana_program::pubkey::Pubkey,
@@ -194,9 +167,6 @@ pub mod d21_instruction {
         Instruction {
             program_id: PROGRAM_ID,
             data: d21::instruction::Vote {
-                _voter_bump: i__voter_bump,
-                _subject_bump: i__subject_bump,
-                _basic_info_bump: i__basic_info_bump,
                 subject: i_subject,
                 is_positive_vote: i_is_positive_vote,
             }

@@ -2,9 +2,8 @@
 name = "program_client"
 version = "0.1.0"
 edition = "2018"
-
-[dependencies]
-trdelnik-client = { git = "https://github.com/reastyn/trdelnik" }
+[dependencies.trdelnik-client]
+git = "https://github.com/reastyn/trdelnik"
 
 [dependencies.d21]
 path = "../programs/d21"

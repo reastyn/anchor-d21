@@ -18,24 +18,18 @@ const vote = async (
   voter: anchor.web3.Keypair,
   positiveVote: VoteType
 ) => {
-  const [subjectPDA, subjectBump] = PublicKey.findProgramAddressSync(
+  const [subjectPDA, _subjectBump] = PublicKey.findProgramAddressSync(
     [Buffer.from("subject"), subject.publicKey.toBuffer()],
     program.programId
   );
-  const [voterPDA, voterBump] = PublicKey.findProgramAddressSync(
+  const [voterPDA, _voterBump] = PublicKey.findProgramAddressSync(
     [Buffer.from("voter"), voter.publicKey.toBuffer()],
     program.programId
   );
-  const [basicInfo, basicInfoBump] = getBasicInfoPDA(program);
+  const [basicInfo, _basicInfoBump] = getBasicInfoPDA(program);
 
   await program.methods
-    .vote(
-      voterBump,
-      subjectBump,
-      basicInfoBump,
-      subject.publicKey,
-      positiveVote === 1
-    )
+    .vote(subject.publicKey, positiveVote === 1)
     .accounts({
       voter: voterPDA,
       subject: subjectPDA,

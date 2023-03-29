@@ -3,13 +3,13 @@ use anchor_lang::prelude::*;
 use crate::*;
 
 #[derive(Accounts)]
-#[instruction(voter_bump: u8, subject_bump: u8, basic_info_bump: u8, subject_public_key: Pubkey, is_positive_vote: bool)]
+#[instruction(subject_public_key: Pubkey, is_positive_vote: bool)]
 pub struct Vote<'info> {
-    #[account(mut, seeds = [b"voter", initializer.key().as_ref()], bump=voter_bump)]
+    #[account(mut, seeds = [b"voter", initializer.key().as_ref()], bump=voter.bump)]
     pub voter: Account<'info, VoterAccount>,
-    #[account(mut, seeds = [b"subject", subject_public_key.key().as_ref()], bump=subject_bump)]
+    #[account(mut, seeds = [b"subject", subject_public_key.key().as_ref()], bump=subject.bump)]
     pub subject: Account<'info, SubjectAccount>,
-    #[account(seeds = [b"basic_info"], bump=basic_info_bump)]
+    #[account(seeds = [b"basic_info"], bump=basic_info.bump)]
     pub basic_info: Account<'info, BasicInfo>,
     #[account(mut)]
     pub initializer: Signer<'info>,
