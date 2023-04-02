@@ -5,17 +5,16 @@ use d21::SubjectAccount;
 use fehler::throws;
 use program_client::d21_instruction;
 use trdelnik_client::{
-    anchor_client::solana_client::client_error::ClientErrorKind,
-    anchor_lang::AccountDeserialize,
-    anyhow::Result,
-    solana_sdk::{account::ReadableAccount, transaction::TransactionError},
+    anchor_lang::AccountDeserialize, anyhow::Result, solana_sdk::account::ReadableAccount,
     ClientError, *,
 };
 
 #[throws]
 #[fixture]
 async fn init_fixture() -> Fixture {
-    let mut fixture = Fixture::new();
+    let mut validator = initialize_validator();
+    let client = validator.start().await;
+    let mut fixture = Fixture::new(client);
     // @todo: here you can call your <program>::initialize instruction
     fixture.deploy().await?;
     fixture.common.init().await?;
@@ -88,15 +87,28 @@ struct Fixture {
     subject2: SubjectFixture,
 }
 impl Fixture {
-    fn new() -> Self {
+    fn new(client: Client) -> Self {
         let voter = system_keypair(2);
-        let common = InitialFixture::new();
-        let program_id = common.program.pubkey().clone();
-        let voter_fixture = VoterFixture::new(voter.clone(), &program_id);
+        let common = InitialFixture::new(client.clone());
+        let program_id = common.program.clone();
+        let voter_fixture = VoterFixture::new(
+            client.clone_with_payer(voter.clone()),
+            voter.clone(),
+            &program_id,
+        );
         let subject = system_keypair(1);
+        let subject2 = system_keypair(3);
         Fixture {
-            subject: SubjectFixture::new(subject, &program_id),
-            subject2: SubjectFixture::new(system_keypair(3), &program_id),
+            subject: SubjectFixture::new(
+                client.clone_with_payer(subject.clone()),
+                subject,
+                &program_id,
+            ),
+            subject2: SubjectFixture::new(
+                client.clone_with_payer(subject2.clone()),
+                subject2,
+                &program_id,
+            ),
             common,
             voter: voter_fixture,
         }

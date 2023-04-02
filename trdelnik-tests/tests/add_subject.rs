@@ -3,17 +3,17 @@ mod common;
 use common::*;
 use d21::{D21ErrorCode, SubjectAccount};
 use fehler::throws;
+use program_client::d21_instruction::PROGRAM_ID;
 use trdelnik_client::{
-    anchor_lang::AccountDeserialize,
-    anyhow::Result,
-    solana_sdk::{account::ReadableAccount, transaction::TransactionError},
-    ClientError, *,
+    anchor_lang::AccountDeserialize, anyhow::Result, solana_sdk::account::ReadableAccount, *,
 };
 
 #[throws]
 #[fixture]
 async fn init_fixture() -> Fixture {
-    let mut fixture = Fixture::new();
+    let mut validator = initialize_validator();
+    let client = validator.start().await;
+    let mut fixture = Fixture::new(client);
     // @todo: here you can call your <program>::initialize instruction
     fixture.deploy().await?;
     fixture.common.init().await?;
@@ -66,12 +66,16 @@ struct Fixture {
     subject: SubjectFixture,
 }
 impl Fixture {
-    fn new() -> Self {
+    fn new(client: Client) -> Self {
         let subject = system_keypair(1);
-        let common = InitialFixture::new();
-        let program_id = common.program.pubkey().clone();
+        let common = InitialFixture::new(client.clone());
+        let program_id = common.program.clone();
         Fixture {
-            subject: SubjectFixture::new(subject, &program_id),
+            subject: SubjectFixture::new(
+                client.clone_with_payer(subject.clone()),
+                subject,
+                &program_id,
+            ),
             common,
         }
     }

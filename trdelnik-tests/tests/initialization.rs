@@ -1,16 +1,21 @@
+mod common;
+
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use d21::BasicInfo;
 use fehler::throws;
-use program_client::d21_instruction;
+use program_client::d21_instruction::{self, PROGRAM_ID};
 use trdelnik_client::{
     anchor_lang::AccountDeserialize, anyhow::Result, solana_sdk::account::ReadableAccount, *,
 };
+use common::initialize_validator;
 
 #[throws]
 #[fixture]
 async fn init_fixture() -> Fixture {
-    let mut fixture = Fixture::new();
+    let mut validator = initialize_validator();
+    let client = validator.start().await;
+    let mut fixture = Fixture::new(client);
     // @todo: here you can call your <program>::initialize instruction
     fixture.deploy().await?;
     d21_instruction::initialize(
@@ -49,16 +54,14 @@ async fn test_initialization(#[future] init_fixture: Result<Fixture>) {
 // @todo: design and implement all the logic you need for your fixture(s)
 struct Fixture {
     client: Client,
-    program: Keypair,
     basic_info: Pubkey,
 }
 impl Fixture {
-    fn new() -> Self {
-        let program_id = program_keypair(0);
+    fn new(client: Client) -> Self {
+        let program_id = PROGRAM_ID;
         Fixture {
-            client: Client::new(system_keypair(0)),
-            program: program_id.clone(),
-            basic_info: Pubkey::find_program_address(&[b"basic_info"], &program_id.pubkey()).0,
+            client,
+            basic_info: Pubkey::find_program_address(&[b"basic_info"], &program_id).0,
         }
     }
 
@@ -67,6 +70,6 @@ impl Fixture {
         self.client
             .airdrop(self.client.payer().pubkey(), 5_000_000_000)
             .await?;
-        self.client.deploy_by_name(&self.program, "d21").await?;
+        // self.client.deploy_by_name(&self.program, "d21").await?;
     }
 }

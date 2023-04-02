@@ -1,6 +1,6 @@
 use d21::D21ErrorCode;
 use fehler::throws;
-use program_client::d21_instruction;
+use program_client::d21_instruction::{self, PROGRAM_ID};
 use trdelnik_client::{
     anchor_client::solana_client::{
         client_error::ClientErrorKind,
@@ -8,13 +8,13 @@ use trdelnik_client::{
     },
     anyhow::Result,
     solana_sdk::{instruction::InstructionError, transaction::TransactionError},
-    *,
+    *
 };
 
 pub struct InitialFixture {
-    pub owner: Client,
+    pub client: Client,
     pub basic_info: (Pubkey, u8),
-    pub program: Keypair,
+    pub program: Pubkey,
 }
 
 // Can you do it somehow better please?
@@ -43,28 +43,28 @@ impl InitialFixture {
         // self.owner
         //     .airdrop(self.owner.payer().pubkey(), 5_000_000_000)
         //     .await?;
-        self.owner.deploy_by_name(&self.program, "d21").await?;
-        println!("Deployed program: {:?}", self.program.pubkey());
+        // self.client.deploy_by_name(&self.program, "d21").await?;
+        // println!("Deployed program: {:?}", self.program.pubkey());
     }
 
     pub async fn init(&mut self) -> Result<()> {
         d21_instruction::initialize(
-            &self.owner,
+            &self.client,
             self.basic_info.0,
-            self.owner.payer().pubkey(),
+            self.client.payer().pubkey(),
             System::id(),
-            Some(self.owner.payer().clone()),
+            Some(self.client.payer().clone()),
         )
         .await?;
         Ok(())
     }
 
-    pub fn new() -> Self {
-        let program_id = program_keypair(0);
+    pub fn new(client: Client) -> Self {
+        let program_id = PROGRAM_ID;
         InitialFixture {
-            owner: Client::new(system_keypair(0)),
+            client: client,
             program: program_id.clone(),
-            basic_info: Pubkey::find_program_address(&[b"basic_info"], &program_id.pubkey()),
+            basic_info: Pubkey::find_program_address(&[b"basic_info"], &program_id),
         }
     }
 }
@@ -75,8 +75,7 @@ pub struct SubjectFixture {
 }
 
 impl SubjectFixture {
-    pub fn new(subject: Keypair, program_id: &Pubkey) -> Self {
-        let client = Client::new(subject.clone());
+    pub fn new(client: Client, subject: Keypair, program_id: &Pubkey) -> Self {
         let program_id = program_id;
         let subject =
             Pubkey::find_program_address(&[b"subject", subject.pubkey().as_ref()], &program_id);
@@ -113,15 +112,21 @@ pub async fn add_voter(
     voter_fixture: &VoterFixture,
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::add_voter(
-        &common_fixture.owner,
+        &common_fixture.client,
         voter_fixture.pubkey.pubkey(),
         voter_fixture.account.0,
-        common_fixture.owner.payer().pubkey(),
+        common_fixture.client.payer().pubkey(),
         System::id(),
         common_fixture.basic_info.0,
-        Some(common_fixture.owner.payer().clone()),
+        Some(common_fixture.client.payer().clone()),
     )
     .await
+}
+
+pub fn initialize_validator() -> Validator {
+    let mut validator = Validator::new();
+    validator.add_program("d21", PROGRAM_ID);
+    validator
 }
 
 pub struct VoterFixture {
@@ -131,14 +136,14 @@ pub struct VoterFixture {
 }
 
 impl VoterFixture {
-    pub fn new(voter: Keypair, program_id: &Pubkey) -> Self {
+    pub fn new(client: Client, voter: Keypair, program_id: &Pubkey) -> Self {
         VoterFixture {
             account: Pubkey::find_program_address(
                 &[b"voter", voter.pubkey().as_ref()],
                 &program_id,
             ),
             pubkey: voter.clone(),
-            client: Client::new(voter),
+            client,
         }
     }
 
