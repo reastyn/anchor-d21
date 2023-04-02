@@ -2,13 +2,13 @@ mod common;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use common::initialize_validator;
 use d21::BasicInfo;
 use fehler::throws;
 use program_client::d21_instruction::{self, PROGRAM_ID};
 use trdelnik_client::{
     anchor_lang::AccountDeserialize, anyhow::Result, solana_sdk::account::ReadableAccount, *,
 };
-use common::initialize_validator;
 
 #[throws]
 #[fixture]
@@ -20,9 +20,12 @@ async fn init_fixture() -> Fixture {
     fixture.deploy().await?;
     d21_instruction::initialize(
         &fixture.client,
-        fixture.basic_info,
-        fixture.client.payer().pubkey(),
-        System::id(),
+        d21::instruction::Initialize {},
+        d21::accounts::Initialize {
+            basic_info: fixture.basic_info,
+            initializer: fixture.client.payer().pubkey(),
+            system_program: System::id(),
+        },
         Some(fixture.client.payer().clone()),
     )
     .await?;

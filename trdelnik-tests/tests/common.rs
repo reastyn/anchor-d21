@@ -1,4 +1,5 @@
 use d21::D21ErrorCode;
+use d21;
 use fehler::throws;
 use program_client::d21_instruction::{self, PROGRAM_ID};
 use trdelnik_client::{
@@ -8,7 +9,7 @@ use trdelnik_client::{
     },
     anyhow::Result,
     solana_sdk::{instruction::InstructionError, transaction::TransactionError},
-    *
+    *,
 };
 
 pub struct InitialFixture {
@@ -50,9 +51,12 @@ impl InitialFixture {
     pub async fn init(&mut self) -> Result<()> {
         d21_instruction::initialize(
             &self.client,
-            self.basic_info.0,
-            self.client.payer().pubkey(),
-            System::id(),
+            d21::instruction::Initialize {},
+            d21::accounts::Initialize {
+                basic_info: self.basic_info.0,
+                initializer: self.client.payer().pubkey(),
+                system_program: System::id(),
+            },
             Some(self.client.payer().clone()),
         )
         .await?;
@@ -97,11 +101,13 @@ pub async fn add_subject(
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::add_subject(
         &subject_fixture.client,
-        name.clone(),
-        subject_fixture.subject.0,
-        subject_fixture.client.payer().pubkey(),
-        System::id(),
-        common_fixture.basic_info.0,
+        d21::instruction::AddSubject { name: name.clone() },
+        d21::accounts::AddSubject {
+            basic_info: common_fixture.basic_info.0,
+            subject: subject_fixture.subject.0,
+            initializer: subject_fixture.client.payer().pubkey(),
+            system_program: System::id(),
+        },
         Some(subject_fixture.client.payer().clone()),
     )
     .await
@@ -113,18 +119,22 @@ pub async fn add_voter(
 ) -> Result<EncodedConfirmedTransactionWithStatusMeta, ClientError> {
     d21_instruction::add_voter(
         &common_fixture.client,
-        voter_fixture.pubkey.pubkey(),
-        voter_fixture.account.0,
-        common_fixture.client.payer().pubkey(),
-        System::id(),
-        common_fixture.basic_info.0,
+        d21::instruction::AddVoter {
+            _voter: voter_fixture.pubkey.pubkey(),
+        },
+        d21::accounts::AddVoter {
+            basic_info: common_fixture.basic_info.0,
+            voter: voter_fixture.account.0,
+            initializer: common_fixture.client.payer().pubkey(),
+            system_program: System::id(),
+        },
         Some(common_fixture.client.payer().clone()),
     )
     .await
 }
 
 pub fn initialize_validator() -> Validator {
-    let mut validator = Validator::new();
+    let mut validator = Validator::default();
     validator.add_program("d21", PROGRAM_ID);
     validator
 }
