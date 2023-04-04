@@ -3,7 +3,8 @@ name = "program_client"
 version = "0.1.0"
 edition = "2018"
 [dependencies.trdelnik-client]
-path = "../../trdelnik/crates/client"
+# path = "../../trdelnik/crates/client"
+git = "https://github.com/reastyn/trdelnik"
 version = "0.6.0"
 
 [dependencies.d21]

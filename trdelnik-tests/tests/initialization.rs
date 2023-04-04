@@ -2,7 +2,7 @@ mod common;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use common::initialize_validator;
+pub use common::*;
 use d21::BasicInfo;
 use fehler::throws;
 use program_client::d21_instruction::{self, PROGRAM_ID};

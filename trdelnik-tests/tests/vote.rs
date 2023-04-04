@@ -1,6 +1,6 @@
 mod common;
 
-use common::*;
+pub use common::*;
 use d21::SubjectAccount;
 use fehler::throws;
 use program_client::d21_instruction;

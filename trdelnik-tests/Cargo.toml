@@ -7,8 +7,8 @@ edition = "2021"
 [dev-dependencies]
 fehler = "1.0.0"
 rstest = "0.12.0"
-# trdelnik-client = { git = "https://github.com/reastyn/trdelnik", branch = "feature/rust-validator" }
-trdelnik-client = { path = "../../trdelnik/crates/client", version = "0.6.0" }
+trdelnik-client = { git = "https://github.com/reastyn/trdelnik" }
+# trdelnik-client = { path = "../../trdelnik/crates/client", version = "0.6.0" }
 
 [dev-dependencies.program_client]
 path = "../.program_client"

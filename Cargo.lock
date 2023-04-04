@@ -6960,6 +6960,7 @@ dependencies = [
 [[package]]
 name = "trdelnik-client"
 version = "0.6.0"
+source = "git+https://github.com/reastyn/trdelnik#f85773a2e96cdbf0e32ea48158e5b0da93afc73f"
 dependencies = [
  "anchor-client",
  "anyhow",
@@ -7003,6 +7004,7 @@ dependencies = [
 [[package]]
 name = "trdelnik-test"
 version = "0.3.0"
+source = "git+https://github.com/reastyn/trdelnik#f85773a2e96cdbf0e32ea48158e5b0da93afc73f"
 dependencies = [
  "darling 0.13.4",
  "proc-macro2 1.0.51",

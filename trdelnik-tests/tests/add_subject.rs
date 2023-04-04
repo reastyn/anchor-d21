@@ -1,9 +1,8 @@
 mod common;
 
-use common::*;
+pub use common::*;
 use d21::{D21ErrorCode, SubjectAccount};
 use fehler::throws;
-use program_client::d21_instruction::PROGRAM_ID;
 use trdelnik_client::{
     anchor_lang::AccountDeserialize, anyhow::Result, solana_sdk::account::ReadableAccount, *,
 };
