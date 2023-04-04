@@ -1,6 +1,7 @@
 use std::{
     any::{Any, TypeId},
     collections::HashMap,
+    rc::Rc,
 };
 
 use program_client::d21_instruction::PROGRAM_ID;
@@ -50,7 +51,8 @@ impl<Args> FuzzTestBuilder<Args> {
     }
 
     fn with_state<S: 'static>(&mut self, state: S) -> &mut Self {
-        self.state.insert(TypeId::of::<S>(), Box::new(State(state)));
+        self.state
+            .insert(TypeId::of::<S>(), Box::new(State(Rc::new(state))));
         self
     }
 }
@@ -62,9 +64,15 @@ trait Handler<Args> {
 trait FromFuzzBuilder<Args> {
     fn from_fuzz_builder(builder: &FuzzTestBuilder<Args>) -> Self;
 }
-pub struct State<S>(pub S);
+pub struct State<S>(pub Rc<S>);
 
-impl<Args, T> FromFuzzBuilder<Args> for State<T> {
+impl<S> Clone for State<S> {
+    fn clone(&self) -> Self {
+        State(self.0.clone())
+    }
+}
+
+impl<Args, T: 'static> FromFuzzBuilder<Args> for State<T> {
     fn from_fuzz_builder(builder: &FuzzTestBuilder<Args>) -> State<T> {
         let state = builder
             .state
@@ -115,17 +123,17 @@ async fn main() {
     let mut validator = Validator::default();
     validator.add_program("d21", PROGRAM_ID);
 
-    fn flow_add_subject(client: Client) {
+    fn flow_add_subject(client: Client, State(state): State<TestState>) {
         println!("{}", client.payer().pubkey());
     }
 
     // fn invariant_add_subject(validator: &mut Validator, client: &mut Client) {}
 
     FuzzTestBuilder::new(validator)
-        .add_flow(flow_add_subject)
         .add_flow(|client: Client| {
             println!("{}", client.payer().pubkey());
         })
+        .add_flow(flow_add_subject)
         .with_state(TestState {
             owner: Pubkey::new_unique(),
         })
