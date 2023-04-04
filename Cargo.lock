@@ -3594,7 +3594,7 @@ name = "program_client"
 version = "0.1.0"
 dependencies = [
  "d21",
- "trdelnik-client",
+ "trdelnik-client 0.6.0 (git+https://github.com/reastyn/trdelnik)",
 ]
 
 [[package]]
@@ -6960,6 +6960,49 @@ dependencies = [
 [[package]]
 name = "trdelnik-client"
 version = "0.6.0"
+dependencies = [
+ "anchor-client",
+ "anyhow",
+ "bincode",
+ "borsh",
+ "cargo_metadata",
+ "crossbeam-channel",
+ "ed25519-dalek",
+ "fehler",
+ "futures 0.3.26",
+ "heck 0.4.1",
+ "lazy_static",
+ "log",
+ "quote 1.0.23",
+ "rand 0.7.3",
+ "rstest",
+ "serde",
+ "serde_json",
+ "serial_test",
+ "solana-account-decoder",
+ "solana-cli-output",
+ "solana-client",
+ "solana-core",
+ "solana-faucet",
+ "solana-logger",
+ "solana-rpc",
+ "solana-sdk",
+ "solana-transaction-status",
+ "solana-validator",
+ "spl-associated-token-account",
+ "spl-token",
+ "symlink",
+ "syn 1.0.107",
+ "thiserror",
+ "tokio",
+ "toml",
+ "trdelnik-test 0.3.0",
+ "vergen",
+]
+
+[[package]]
+name = "trdelnik-client"
+version = "0.6.0"
 source = "git+https://github.com/reastyn/trdelnik#f85773a2e96cdbf0e32ea48158e5b0da93afc73f"
 dependencies = [
  "anchor-client",
@@ -6997,8 +7040,18 @@ dependencies = [
  "thiserror",
  "tokio",
  "toml",
- "trdelnik-test",
+ "trdelnik-test 0.3.0 (git+https://github.com/reastyn/trdelnik)",
  "vergen",
+]
+
+[[package]]
+name = "trdelnik-test"
+version = "0.3.0"
+dependencies = [
+ "darling 0.13.4",
+ "proc-macro2 1.0.51",
+ "quote 1.0.23",
+ "syn 1.0.107",
 ]
 
 [[package]]
@@ -7019,8 +7072,10 @@ dependencies = [
  "d21",
  "fehler",
  "program_client",
+ "rand 0.8.5",
  "rstest",
- "trdelnik-client",
+ "tokio",
+ "trdelnik-client 0.6.0",
 ]
 
 [[package]]

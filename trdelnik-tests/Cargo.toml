@@ -4,14 +4,28 @@ version = "0.1.0"
 description = "Created with Trdelnik"
 edition = "2021"
 
-[dev-dependencies]
+[dependencies]
 fehler = "1.0.0"
 rstest = "0.12.0"
-trdelnik-client = { git = "https://github.com/reastyn/trdelnik" }
-# trdelnik-client = { path = "../../trdelnik/crates/client", version = "0.6.0" }
+tokio = "~1.14.1"
+# trdelnik-client = { git = "https://github.com/reastyn/trdelnik", branch = "feature/rust-validator" }
+trdelnik-client = { path = "../../trdelnik/crates/client", version = "0.6.0" }
+rand = "0.8.5"
 
-[dev-dependencies.program_client]
+[dependencies.program_client]
 path = "../.program_client"
 
-[dev-dependencies.d21]
+[dependencies.d21]
 path = "../programs/d21"
+
+[[bin]]
+name = "fuzz_test_1"
+path = "fuzz-tests/fuzz_test_1.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_test_2"
+path = "fuzz-tests/fuzz_test_2.rs"
+test = false
+doc = false
