@@ -2,6 +2,7 @@ use std::{
     any::{Any, TypeId},
     collections::HashMap,
     rc::Rc,
+    sync::Arc,
 };
 
 use program_client::d21_instruction::PROGRAM_ID;
@@ -9,62 +10,77 @@ use trdelnik_client::*;
 
 type AnyState = HashMap<TypeId, Box<dyn Any>>;
 
-struct FuzzTestBuilder<Args> {
+struct FuzzTestBuilder {
     validator: Validator,
-    client: Option<Client>,
-    flows: Vec<Box<dyn Handler<Args>>>,
-    state: AnyState,
+    flows: Vec<Box<dyn Fn(&PassableState)>>,
+    passable_state: PassableState,
 }
 
-impl<Args> FuzzTestBuilder<Args> {
-    fn new(validator: Validator) -> Self {
-        FuzzTestBuilder {
-            validator,
-            client: None,
-            flows: vec![],
-            state: HashMap::new(),
-        }
-    }
+struct PassableState {
+    state: AnyState,
+    client: Option<Client>,
+}
 
+impl PassableState {
     fn client(&self) -> Client {
         self.client
             .as_ref()
             .expect("You probably forgot to call the `start` method before accessing the client.")
             .clone()
     }
+}
 
-    fn add_flow<F>(&mut self, flow: F) -> &mut Self
+impl FuzzTestBuilder {
+    fn new(validator: Validator) -> Self {
+        FuzzTestBuilder {
+            validator,
+            flows: vec![],
+            passable_state: PassableState {
+                state: HashMap::new(),
+                client: None,
+            },
+        }
+    }
+
+    fn add_flow<F, Args>(&mut self, flow: F) -> &mut Self
     where
         F: Handler<Args> + 'static,
     {
-        let boxed_flow = Box::new(flow);
+        let boxed_flow = Box::new(move |passable_state: &PassableState| {
+            println!("Called");
+            flow.call(passable_state);
+            println!("Called2");
+        });
         self.flows.push(boxed_flow);
         self
     }
 
-    async fn start(&mut self) {
-        let client = self.validator.start().await;
-        self.client = Some(client);
+    fn start(&mut self) {
+        // let client = self.validator.start().await;
+        // self.passable_state.client = Some(client);
         for flow in self.flows.iter() {
-            flow.call(self);
+            (*flow)(&self.passable_state);
         }
     }
 
     fn with_state<S: 'static>(&mut self, state: S) -> &mut Self {
-        self.state
-            .insert(TypeId::of::<S>(), Box::new(State(Rc::new(state))));
+        println!("{:?}", TypeId::of::<S>());
+        self.passable_state
+            .state
+            .insert(TypeId::of::<S>(), Box::new(State(state.into())));
+        println!("{:?}", self.passable_state.state.get(&TypeId::of::<S>()));
         self
     }
 }
 
-trait Handler<Args> {
-    fn call(&self, builder: &FuzzTestBuilder<Args>);
+trait Handler<T> {
+    fn call(&self, builder: &PassableState);
 }
 
-trait FromFuzzBuilder<Args> {
-    fn from_fuzz_builder(builder: &FuzzTestBuilder<Args>) -> Self;
+trait FromPassable {
+    fn from_passable(builder: &PassableState) -> Self;
 }
-pub struct State<S>(pub Rc<S>);
+pub struct State<S>(pub Arc<S>);
 
 impl<S> Clone for State<S> {
     fn clone(&self) -> Self {
@@ -72,25 +88,25 @@ impl<S> Clone for State<S> {
     }
 }
 
-impl<Args, T: 'static> FromFuzzBuilder<Args> for State<T> {
-    fn from_fuzz_builder(builder: &FuzzTestBuilder<Args>) -> State<T> {
+impl<T: 'static> FromPassable for State<T> {
+    fn from_passable(builder: &PassableState) -> State<T> {
         let state = builder
             .state
-            .get(&TypeId::of::<State<T>>())
+            .get(&TypeId::of::<T>())
             .expect("State not found")
             .downcast_ref::<State<T>>()
             .expect("State type mismatch");
-        state.clone()
+        (*state).clone()
     }
 }
 
 impl<F, A> Handler<A> for F
 where
     F: Fn(A),
-    A: FromFuzzBuilder<A>,
+    A: FromPassable,
 {
-    fn call(&self, fuzz_test_builder: &FuzzTestBuilder<A>) {
-        let a = A::from_fuzz_builder(&fuzz_test_builder);
+    fn call(&self, fuzz_test_builder: &PassableState) {
+        let a = A::from_passable(&fuzz_test_builder);
         (*self)(a)
     }
 }
@@ -98,18 +114,18 @@ where
 impl<F, A, B> Handler<(A, B)> for F
 where
     F: Fn(A, B),
-    A: FromFuzzBuilder<(A, B)>,
-    B: FromFuzzBuilder<(A, B)>,
+    A: FromPassable,
+    B: FromPassable,
 {
-    fn call(&self, fuzz_test_builder: &FuzzTestBuilder<(A, B)>) {
-        let a = A::from_fuzz_builder(&fuzz_test_builder);
-        let b = B::from_fuzz_builder(&fuzz_test_builder);
+    fn call(&self, fuzz_test_builder: &PassableState) {
+        let a = A::from_passable(&fuzz_test_builder);
+        let b = B::from_passable(&fuzz_test_builder);
         (*self)(a, b)
     }
 }
 
-impl<Args> FromFuzzBuilder<Args> for Client {
-    fn from_fuzz_builder(builder: &FuzzTestBuilder<Args>) -> Self {
+impl FromPassable for Client {
+    fn from_passable(builder: &PassableState) -> Self {
         builder.client()
     }
 }
@@ -118,26 +134,35 @@ struct TestState {
     owner: Pubkey,
 }
 
+struct TestState2 {
+    counter: u64,
+}
+
 #[tokio::main]
 async fn main() {
     let mut validator = Validator::default();
     validator.add_program("d21", PROGRAM_ID);
 
-    fn flow_add_subject(client: Client, State(state): State<TestState>) {
-        println!("{}", client.payer().pubkey());
+    fn flow_add_subject(State(state): State<TestState>) {
+        // println!("{}", client.payer().pubkey());
+        println!("{}", state.owner);
     }
 
     // fn invariant_add_subject(validator: &mut Validator, client: &mut Client) {}
 
     FuzzTestBuilder::new(validator)
-        .add_flow(|client: Client| {
-            println!("{}", client.payer().pubkey());
-        })
         .add_flow(flow_add_subject)
+        .add_flow(|State(state): State<TestState>, State(state2): State<TestState2>| {
+            println!("{}", state.owner);
+            println!("{}", state2.counter);
+        })
         .with_state(TestState {
             owner: Pubkey::new_unique(),
         })
-        .start()
-        .await;
+        .with_state(TestState2 {
+            counter: 5,
+        })
+        .start();
+    // tokio::time::sleep(std::time::Duration::from_secs(10)).await;
     // .invariant(invariant_add_subject);
 }

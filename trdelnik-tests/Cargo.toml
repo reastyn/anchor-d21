@@ -11,6 +11,7 @@ tokio = "~1.14.1"
 # trdelnik-client = { git = "https://github.com/reastyn/trdelnik", branch = "feature/rust-validator" }
 trdelnik-client = { path = "../../trdelnik/crates/client", version = "0.6.0" }
 rand = "0.8.5"
+async-trait = "0.1.68"
 
 [dependencies.program_client]
 path = "../.program_client"
