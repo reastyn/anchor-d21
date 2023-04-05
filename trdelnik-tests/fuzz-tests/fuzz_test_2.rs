@@ -1,5 +1,6 @@
 use std::{
     any::{Any, TypeId},
+    cell::{RefCell, RefMut},
     collections::HashMap,
     rc::Rc,
     sync::Arc,
@@ -55,9 +56,9 @@ impl FuzzTestBuilder {
         self
     }
 
-    fn start(&mut self) {
-        // let client = self.validator.start().await;
-        // self.passable_state.client = Some(client);
+    async fn start(&mut self) {
+        let client = self.validator.start().await;
+        self.passable_state.client = Some(client);
         for flow in self.flows.iter() {
             (*flow)(&self.passable_state);
         }
@@ -67,7 +68,7 @@ impl FuzzTestBuilder {
         println!("{:?}", TypeId::of::<S>());
         self.passable_state
             .state
-            .insert(TypeId::of::<S>(), Box::new(State(state.into())));
+            .insert(TypeId::of::<S>(), Box::new(Rc::new(RefCell::new(state))));
         println!("{:?}", self.passable_state.state.get(&TypeId::of::<S>()));
         self
     }
@@ -80,13 +81,7 @@ trait Handler<T> {
 trait FromPassable {
     fn from_passable(builder: &PassableState) -> Self;
 }
-pub struct State<S>(pub Arc<S>);
-
-impl<S> Clone for State<S> {
-    fn clone(&self) -> Self {
-        State(self.0.clone())
-    }
-}
+pub struct State<S: 'static>(pub Rc<RefCell<S>>);
 
 impl<T: 'static> FromPassable for State<T> {
     fn from_passable(builder: &PassableState) -> State<T> {
@@ -94,9 +89,9 @@ impl<T: 'static> FromPassable for State<T> {
             .state
             .get(&TypeId::of::<T>())
             .expect("State not found")
-            .downcast_ref::<State<T>>()
+            .downcast_ref::<Rc<RefCell<T>>>()
             .expect("State type mismatch");
-        (*state).clone()
+        State(state.clone())
     }
 }
 
@@ -143,26 +138,27 @@ async fn main() {
     let mut validator = Validator::default();
     validator.add_program("d21", PROGRAM_ID);
 
-    fn flow_add_subject(State(state): State<TestState>) {
+    fn flow_add_subject(State(state2): State<TestState2>) {
         // println!("{}", client.payer().pubkey());
-        println!("{}", state.owner);
+        // println!("{}", state.borrow_mut().owner);
+        state2.borrow_mut().counter += 1
     }
 
     // fn invariant_add_subject(validator: &mut Validator, client: &mut Client) {}
 
     FuzzTestBuilder::new(validator)
         .add_flow(flow_add_subject)
-        .add_flow(|State(state): State<TestState>, State(state2): State<TestState2>| {
-            println!("{}", state.owner);
-            println!("{}", state2.counter);
-        })
+        .add_flow(
+            |State(_state): State<TestState>, State(state2): State<TestState2>| {
+                // println!("{}", state.owner);
+                println!("{}", state2.borrow().counter);
+            },
+        )
         .with_state(TestState {
             owner: Pubkey::new_unique(),
         })
-        .with_state(TestState2 {
-            counter: 5,
-        })
-        .start();
+        .with_state(TestState2 { counter: 5 })
+        .start().await;
     // tokio::time::sleep(std::time::Duration::from_secs(10)).await;
     // .invariant(invariant_add_subject);
 }
