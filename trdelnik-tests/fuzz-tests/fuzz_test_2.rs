@@ -163,6 +163,14 @@ async fn main() {
         // println!("{}", client.payer().pubkey());
         // println!("{}", state.borrow_mut().owner);
         // state2.borrow_mut().counter += 1
+        let mut locked_state = state2.lock().unwrap();
+        locked_state.counter += 1
+    }
+
+    async fn flow_add_smth(State(state2): State<TestState2>) {
+        // println!("{}", client.payer().pubkey());
+        // println!("{}", state.borrow_mut().owner);
+        // state2.borrow_mut().counter += 1
         let locked_state = state2.lock().unwrap();
         println!("this shit: {}", locked_state.counter);
     }
@@ -171,12 +179,7 @@ async fn main() {
 
     FuzzTestBuilder::new(validator)
         .add_flow(flow_add_subject)
-        // .add_flow(
-        //     |State(_state): State<TestState>, State(state2): State<TestState2>| {
-        //         // println!("{}", state.owner);
-        //         println!("{}", state2.borrow().counter);
-        //     },
-        // )
+        .add_flow(flow_add_smth)
         .with_state(TestState {
             owner: Pubkey::new_unique(),
         })
