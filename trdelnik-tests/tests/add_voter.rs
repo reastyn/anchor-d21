@@ -39,6 +39,29 @@ async fn test_add_voter(#[future] init_fixture: Result<Fixture>) {
 }
 
 #[trdelnik_test]
+async fn test_add_voter_not_owner(#[future] init_fixture: Result<Fixture>) {
+    let fixture = init_fixture.await?;
+
+    let payer = Keypair::new();
+    fixture.common.owner.airdrop(payer.pubkey(), 5_000_000).await?;
+
+    let result = d21_instruction::add_voter(
+        &fixture.common.owner,
+        fixture.common.basic_info.1,
+        fixture.voter.pubkey.pubkey(),
+        fixture.voter.account.0,
+        payer.pubkey(),
+        System::id(),
+        fixture.common.basic_info.0,
+        Some(payer.clone()),
+    )
+    .await;
+
+    let err = result.err().unwrap();
+    check_custom_err(&err, d21::D21ErrorCode::NotOwner);
+}
+
+#[trdelnik_test]
 async fn test_add_voter_twice(#[future] init_fixture: Result<Fixture>) {
     let fixture = init_fixture.await?;
     add_voter(&fixture.common, &fixture.voter).await?;
