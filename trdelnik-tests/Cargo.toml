@@ -19,3 +19,10 @@ path = "../.program_client"
 
 [dependencies.d21]
 path = "../programs/d21"
+
+[[bin]]
+name = "fuzz_test"
+path = "fuzz-tests/fuzz_test.rs"
+test = false
+doc = false
+            
