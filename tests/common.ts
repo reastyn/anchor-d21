@@ -34,7 +34,7 @@ export const initialize = async (
   const [basicInfoPDA, basicInfoBump] = getBasicInfoPDA(program);
 
   await program.methods
-    .initialize()
+    .initialize(30)
     .accounts({ basicInfo: basicInfoPDA, initializer: owner.publicKey })
     .signers([owner])
     .rpc();

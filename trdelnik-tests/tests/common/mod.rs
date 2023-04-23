@@ -51,7 +51,7 @@ impl InitialFixture {
     pub async fn init(&mut self) -> Result<()> {
         d21_instruction::initialize(
             &self.client,
-            d21::instruction::Initialize {},
+            d21::instruction::Initialize { election_duration_days: 30 },
             d21::accounts::Initialize {
                 basic_info: self.basic_info.0,
                 initializer: self.client.payer().pubkey(),

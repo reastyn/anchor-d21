@@ -20,7 +20,7 @@ async fn init_fixture() -> Fixture {
     fixture.deploy().await?;
     d21_instruction::initialize(
         &fixture.client,
-        d21::instruction::Initialize {},
+        d21::instruction::Initialize { election_duration_days: 30 },
         d21::accounts::Initialize {
             basic_info: fixture.basic_info,
             initializer: fixture.client.payer().pubkey(),

@@ -12,12 +12,12 @@ pub use instructions::*;
 pub mod d21 {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    pub fn initialize(ctx: Context<Initialize>, election_duration_days: u32) -> Result<()> {
         let bump = *ctx
             .bumps
             .get("basic_info")
             .ok_or(D21ErrorCode::InvalidBump)?;
-        ctx.accounts.process(bump)
+        ctx.accounts.process(bump, election_duration_days)
     }
 
     pub fn add_subject(ctx: Context<AddSubject>, name: String) -> Result<()> {
