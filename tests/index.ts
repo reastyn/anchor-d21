@@ -25,13 +25,6 @@ describe("d21", () => {
     testAddSubject(program, provider);
   });
 
-  describe("get subjects", () => {
-    it("should return all subjects", async () => {
-      const subjectAccounts = await program.account.subjectAccount.all();
-      console.log(subjectAccounts);
-    });
-  });
-
   describe("owner should be able to add voter", () => {
     testAddVoter(program, owner, provider);
   });

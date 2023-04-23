@@ -3,6 +3,7 @@ mod common;
 pub use common::*;
 use d21::VoterAccount;
 use fehler::throws;
+use program_client::d21_instruction;
 use trdelnik_client::{anchor_lang::AccountDeserialize, anyhow::Result, *};
 
 #[throws]
@@ -46,6 +47,29 @@ async fn test_add_voter_twice(#[future] init_fixture: Result<Fixture>) {
     add_voter(&fixture.common, &fixture.voter).await?;
     let result = add_voter(&fixture.common, &fixture.voter).await;
     assert!(!result.is_ok());
+}
+
+#[trdelnik_test]
+async fn test_add_voter_not_owner(#[future] init_fixture: Result<Fixture>) {
+    let fixture = init_fixture.await?;
+    let payer = Keypair::new();
+    fixture.common.client.airdrop(payer.pubkey(), 5_000_000).await?;
+    let result = d21_instruction::add_voter(
+        &fixture.common.client,
+        d21::instruction::AddVoter {
+            _voter: fixture.voter.pubkey.pubkey(),
+        },
+        d21::accounts::AddVoter {
+            basic_info: fixture.common.basic_info.0,
+            voter: fixture.voter.account.0,
+            initializer: payer.pubkey(),
+            system_program: System::id(),
+        },
+        Some(payer),
+    )
+    .await;
+    let err = result.err().unwrap();
+    check_custom_err(&err, d21::D21ErrorCode::NotOwner);
 }
 
 struct Fixture {
