@@ -63,7 +63,8 @@ export const testVote = (
       "NegativeVotesAfterTwoPositive"
     );
   });
-
+  
+  // Done
   it("should be able to vote", async () => {
     const subjectAccount = await vote(
       program,
@@ -74,6 +75,7 @@ export const testVote = (
     expect(subjectAccount.votes.toNumber()).to.be.eq(1);
   });
 
+  // Done
   it("should not be possible to vote twice for same person", async () => {
     await expectToThrow(
       async () => await vote(program, subject, voter, VoteType.Positive),
@@ -81,6 +83,7 @@ export const testVote = (
     );
   });
 
+  // Done
   it("should be able to vote for second time", async () => {
     await blockRequestAirDrop(provider, subject2.publicKey);
     await addSubject(program, subject2);
@@ -94,6 +97,7 @@ export const testVote = (
     expect(subjectAccount.votes.toNumber()).to.be.eq(1);
   });
 
+  // Done
   it("should not be able to vote for third time", async () => {
     await blockRequestAirDrop(provider, subject3.publicKey);
     await addSubject(program, subject3);
@@ -104,7 +108,8 @@ export const testVote = (
     );
   });
 
-  it("should not be able to vote negatively", async () => {
+  // Done
+  it("should be able to vote negatively", async () => {
     const subjectAccount = await vote(
       program,
       subject3,
@@ -114,6 +119,7 @@ export const testVote = (
     expect(subjectAccount.votes.toNumber()).to.be.eq(-1);
   });
 
+  // Done
   it("should not be able to vote negatively twice", async () => {
     await blockRequestAirDrop(provider, subject4.publicKey);
     await addSubject(program, subject4);
