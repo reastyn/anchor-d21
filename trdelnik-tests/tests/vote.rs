@@ -40,7 +40,7 @@ async fn init_fixture() -> Fixture {
     add_subject(
         &fixture.common,
         &fixture.subject4,
-        &"Mr White Sky".to_string(),
+        &"Mr White Sky".to_string(),  
     )
     .await?;
     add_voter(&fixture.common, &fixture.voter).await?;
@@ -58,7 +58,7 @@ async fn vote(
         &voter.client,
         d21::instruction::Vote {
             subject: subject.client.payer().pubkey(),
-            is_positive_vote: true,
+            is_positive_vote: positive_vote,
         },
         d21::accounts::Vote {
             voter: voter.account.0,
@@ -190,11 +190,16 @@ impl Fixture {
                 subject2,
                 &program_id,
             ),
-            // subject: SubjectFixture::new(subject, &program_id),
-            // subject2: SubjectFixture::new(system_keypair(3), &program_id),
-            
-            subject3: SubjectFixture::new(system_keypair(4), &program_id),
-            subject4: SubjectFixture::new(system_keypair(5), &program_id),
+            subject3: SubjectFixture::new(
+                client.clone_with_payer(system_keypair(4)),
+                system_keypair(4),
+                &program_id,
+            ),
+            subject4: SubjectFixture::new(
+                client.clone_with_payer(system_keypair(5)),
+                system_keypair(5),
+                &program_id,
+            ),
             common,
             voter: voter_fixture,
         }

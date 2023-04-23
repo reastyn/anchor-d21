@@ -20,7 +20,9 @@ async fn init_fixture() -> Fixture {
     fixture.deploy().await?;
     d21_instruction::initialize(
         &fixture.client,
-        d21::instruction::Initialize { election_duration_days: 30 },
+        d21::instruction::Initialize {
+            election_duration_days: 30,
+        },
         d21::accounts::Initialize {
             basic_info: fixture.basic_info,
             initializer: fixture.client.payer().pubkey(),
@@ -35,11 +37,6 @@ async fn init_fixture() -> Fixture {
 #[trdelnik_test]
 async fn test_initialization(#[future] init_fixture: Result<Fixture>) {
     let fixture = init_fixture.await?;
-    // TODO: Why does this not work?
-    // fixture
-    //     .client
-    //     .account_data_borsh::<BasicInfo>(fixture.basic_info)
-    //     .await?;
     let basic_info = fixture.client.get_account(fixture.basic_info).await?;
     assert_eq!(false, basic_info.is_none());
     let basic_info = BasicInfo::try_deserialize(&mut basic_info.unwrap().data()).unwrap();
@@ -52,6 +49,25 @@ async fn test_initialization(#[future] init_fixture: Result<Fixture>) {
         .as_secs()
         + 2628000; // month in seconds
     assert!(basic_info.end_date <= i64::try_from(now_unix).unwrap());
+}
+
+#[trdelnik_test]
+async fn test_initialization_twice(#[future] init_fixture: Result<Fixture>) {
+    let fixture = init_fixture.await?;
+    let reinitialization = d21_instruction::initialize(
+        &fixture.client,
+        d21::instruction::Initialize {
+            election_duration_days: 30,
+        },
+        d21::accounts::Initialize {
+            basic_info: fixture.basic_info,
+            initializer: fixture.client.payer().pubkey(),
+            system_program: System::id(),
+        },
+        Some(fixture.client.payer().clone()),
+    )
+    .await;
+    assert!(reinitialization.is_err());
 }
 
 // @todo: design and implement all the logic you need for your fixture(s)
