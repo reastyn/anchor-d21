@@ -131,7 +131,10 @@ fn random_voter(voters: &mut VoterState) -> Option<&mut VotingInfo> {
     voters.voters.choose_mut(&mut rng)
 }
 
-fn random_subject<'a, F>(subjects: &'a mut Vec<SubjectInfo>, check_subject: F) -> Option<&mut SubjectInfo>
+fn random_subject<'a, F>(
+    subjects: &'a mut Vec<SubjectInfo>,
+    check_subject: F,
+) -> Option<&mut SubjectInfo>
 where
     F: Fn(&SubjectInfo) -> bool,
 {
@@ -178,10 +181,9 @@ async fn flow_vote(
     State(mut test_state): State<SubjectState>,
     State(mut voter_state): State<VoterState>,
 ) {
-    let voting_info = if let Some(voting_info) = random_voter(&mut voter_state) {
-        voting_info
-    } else {
-        return;
+    let voting_info = match random_voter(&mut voter_state) {
+        Some(voting_info) => voting_info,
+        None => return,
     };
 
     let subject = random_subject(&mut test_state.subjects, |subject| {
@@ -189,11 +191,9 @@ async fn flow_vote(
             && Some(subject.subject) != voting_info.second_positive_vote
             && Some(subject.subject) != voting_info.third_negative_vote
     });
-
-    let subject_info = if let Some(subject) = subject {
-        subject
-    } else {
-        return;
+    let subject_info = match subject {
+        Some(subject) => subject,
+        None => return,
     };
 
     match voting_info {
@@ -279,7 +279,6 @@ fn initialize_validator() -> Validator {
 
 #[trdelnik_fuzz]
 async fn main() {
-
     FuzzTestBuilder::new()
         .initialize_validator(initialize_validator)
         .with_state(SubjectState { subjects: vec![] })
